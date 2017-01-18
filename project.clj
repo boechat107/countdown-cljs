@@ -30,7 +30,8 @@
                                                                      :main          "env.android.main"
                                                                      :output-dir    "target/android"
                                                                      :optimizations :none}}]}
-                             :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}
+                             :repl-options {:init-ns user
+                                            :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}
                        :prod {:cljsbuild {:builds [{:id           "ios"
                                                     :source-paths ["src" "env/prod"]
                                                     :compiler     {:output-to     "index.ios.js"
