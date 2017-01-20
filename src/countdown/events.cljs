@@ -1,6 +1,6 @@
 (ns countdown.events
   (:require
-   [re-frame.core :refer [reg-event-db reg-event-fx after]]
+   [re-frame.core :as rf :refer [reg-event-db reg-event-fx after]]
    [clojure.spec :as s]
    [countdown.db :as db :refer [app-db]]))
 
@@ -31,16 +31,34 @@
    app-db))
 
 ;; Handles the start of the countdown by registering future effects with
-;; (`:dispatch-later`). These effects are events to decrease the db's counter.
+;; (`:dispatch-later`) to decrease the db's counter. In addition, it changes
+;; the running state to `true`.
 (reg-event-fx
  :countdown-start
- (fn [cofx _]
-   {:dispatch-later (map #(array-map :ms (* 1000 %)
-                                     :dispatch [:dec-counter])
-                         (range 1 11))}))
+ (fn [{db :db :as cofx} _]
+   ;; Effects are returned only if the countdown is not running.
+   (when-not (:flag-running? db)
+     {:db (assoc db :flag-running? true)
+      ;; Schedule the dispatching of multiple `:dec-counter` events and a single
+      ;; one `:flag-running->false` at the end.
+      :dispatch-later (let [last-mult (:counter db)]
+                        (conj (map #(array-map :ms (* 1000 %)
+                                               :dispatch [:dec-counter])
+                                   (range 1 (inc last-mult)))
+                              {:ms (* 1000 last-mult)
+                               :dispatch [:flag-running->false]}))})))
 
-;; Updates the db's counter by decreasing its value.
+;; Updates the db's counter by decreasing its value (but never less than zero).
 (reg-event-db
  :dec-counter
  (fn [db _]
-   (update db :counter dec)))
+   (let [counter (:counter db)]
+     (if (pos? counter)
+       (assoc db :counter (dec counter))
+       db))))
+
+;; Updates `:flag-running?` to false.
+(reg-event-db
+ :flag-running->false
+ (fn [db _]
+   (assoc db :flag-running? false)))
