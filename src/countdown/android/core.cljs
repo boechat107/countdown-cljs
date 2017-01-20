@@ -8,7 +8,7 @@
 (def logo-img (js/require "./images/cljs.png"))
 
 (defn app-root []
-  (let [greeting (subscribe [:get-greeting])]
+  (let [cnt (subscribe [:get-counter])]
     (fn []
       [ui/view {:style {:flex-direction "column" :margin 40 :align-items "center"
                         :justify-content "center" :flex 1}}
@@ -17,12 +17,13 @@
         "Simple Countdown"]
        [ui/text {:style {:font-size 30 :font-weight "100" :margin-bottom 20
                          :text-align "center"}}
-        10]
+        @cnt]
        ;; Button.
        [ui/btn {:title "Start"
-                :on-press #(ui/alert "Hey")}]])))
+                :on-press #(dispatch [:countdown-start])}]])))
 
 (defn init []
+  ;; `dispatch-sync` is used only when the application is being started.
   (dispatch-sync [:initialize-db])
   (.registerComponent ui/app-registry
                       "countdown"
