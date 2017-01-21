@@ -11,7 +11,7 @@ The first app we never forget...
 
 ## Screenshots
 
-![Android](https://raw.githubusercontent.com/boechat107/countdown-cljs/master/_screenshots/android.png)
+<img src="https://raw.githubusercontent.com/boechat107/countdown-cljs/master/_screenshots/android.png" height="450">
 
 ## Requirements
 
