@@ -20,14 +20,11 @@
                          :text-align "center"}}
         @cnt]
        ;; Button.
-       ;; TODO - Problem:
-       ;; how to stop the countdown and cancel the already scheduled events?
-       ;; -> :dec-counter handler should be responsible to schedule itself,
-       ;; once, if the countdown is running. We never schedule all of them at
-       ;; once, as it's done now.
+       ;; TODO - Reset button
        [ui/btn {:title (if @running? "Stop" "Start")
-                :on-press #(when-not @running?
-                             (dispatch [:countdown-start]))}]])))
+                :on-press #(if @running?
+                             (dispatch [:stop-countdown])
+                             (dispatch [:start-countdown]))}]])))
 
 (defn init []
   ;; `dispatch-sync` is used only when the application is being started.
