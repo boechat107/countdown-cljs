@@ -1,6 +1,6 @@
 (ns countdown.events
   (:require
-   [re-frame.core :refer [reg-event-db after]]
+   [re-frame.core :as rf :refer [reg-event-db reg-event-fx after]]
    [clojure.spec :as s]
    [countdown.db :as db :refer [app-db]]))
 
@@ -21,16 +21,44 @@
     (after (partial check-and-throw ::db/app-db))
     []))
 
-;; -- Handlers --------------------------------------------------------------
+;; ## Event Handlers
 
+;; DB initialization, very simple.
 (reg-event-db
  :initialize-db
  validate-spec
  (fn [_ _]
    app-db))
 
+(def dec-counter-event
+  {:ms 1000 :dispatch [:dec-counter]})
+
+;; Handles the start of the countdown by registering future effects with
+;; (`:dispatch-later`) to decrease the db's counter. In addition, it changes
+;; the running state to `true`.
+(reg-event-fx
+ :start-countdown
+ (fn [{db :db :as cofx} _]
+   ;; Effects are returned only if the countdown is not running.
+   (when-not (:flag-running? db)
+     {:db (assoc db :flag-running? true)
+      :dispatch-later [dec-counter-event]})))
+
+;; Updates the db's counter by decreasing its value and dispatching another
+;; `:dec-counter` event, if the counter is still positive. When the counter
+;; reaches zero, a `:stop-countdown` event is scheduled to be dispatched.
+(reg-event-fx
+ :dec-counter
+ (fn [{db :db} _]
+   (when (:flag-running? db)
+     (let [counter (:counter db)]
+       (if (pos? counter)
+         {:db (assoc db :counter (dec counter))
+          :dispatch-later [dec-counter-event]}
+         {:dispatch [:stop-countdown]})))))
+
+;; Updates `:flag-running?` to false.
 (reg-event-db
- :set-greeting
- validate-spec
- (fn [db [_ value]]
-   (assoc db :greeting value)))
+ :stop-countdown
+ (fn [db _]
+   (assoc db :flag-running? false)))

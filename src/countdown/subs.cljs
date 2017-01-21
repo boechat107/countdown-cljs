@@ -2,6 +2,9 @@
   (:require [re-frame.core :refer [reg-sub]]))
 
 (reg-sub
-  :get-greeting
-  (fn [db _]
-    (:greeting db)))
+ :get-counter
+ (fn [db _] (:counter db)))
+
+(reg-sub
+ :get-running-flag
+ (fn [db _] (:flag-running? db)))

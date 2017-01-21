@@ -1,10 +1,13 @@
 (ns countdown.db
   (:require [clojure.spec :as s]))
 
-;; spec of app-db
-(s/def ::greeting string?)
+;; ## Spec of db
+
+(s/def ::counter (s/and integer? #(>= % 0)))
+(s/def ::flag-running? boolean?)
 (s/def ::app-db
-  (s/keys :req-un [::greeting]))
+  (s/keys :req-un [::counter ::flag-running?]))
 
 ;; initial state of app-db
-(def app-db {:greeting "Hello Clojure in iOS and Android!"})
+(def app-db {:counter 10
+             :flag-running? false})
