@@ -1,5 +1,5 @@
-(defproject countdown "0.1.0-SNAPSHOT"
-            :description "FIXME: write description"
+(defproject countdown "0.1.0"
+            :description "Simple app to countdown"
             :url "http://example.com/FIXME"
             :license {:name "Eclipse Public License"
                       :url  "http://www.eclipse.org/legal/epl-v10.html"}
