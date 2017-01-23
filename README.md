@@ -13,6 +13,11 @@ The first app we never forget...
 
 <img src="https://raw.githubusercontent.com/boechat107/countdown-cljs/master/_screenshots/android.png" height="450">
 
+## Motivation
+
+To have my first mobile app!
+([details](http://boechat107.github.io/my-first-stupid-mobile-app/)).
+
 ## Requirements
 
 * JDK 8
